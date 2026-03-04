@@ -812,7 +812,10 @@ Fim.
             if (paginas.length === 0) paginas.push('<p>Página vazia</p>');
             return paginas;
         }
-        
+        const teste = TEXTO_ORIGINAL.split(/\n/);
+        console.log('Total de linhas:', teste.length);
+        console.log('Primeiras 5 linhas:', teste.slice(0, 5));
+        console.log('Tem linhas vazias?', teste.filter(l => l.trim() === '').length);
         // ----- Gerar páginas a partir do texto original -----
         const paginas = dividirTextoEmPaginas(TEXTO_ORIGINAL, PALAVRAS_POR_PAGINA);
     // =================================================================
