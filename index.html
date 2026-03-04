@@ -821,6 +821,9 @@ Fim.
         const paginas = dividirTextoEmPaginas(TEXTO_ORIGINAL, 400);
         console.log('Total de páginas geradas:', paginas.length);
         console.log('Palavras na página 1:', paginas[0]?.split(/\s+/).length);
+        console.log('PALAVRAS_POR_PAGINA vale:', PALAVRAS_POR_PAGINA);
+        console.log('Tamanho do TEXTO_ORIGINAL:', TEXTO_ORIGINAL.length);
+        console.log('Total de palavras no texto:', TEXTO_ORIGINAL.trim().split(/\s+/).filter(Boolean).length);
     // =================================================================
     // Lógica completa do livro (navegação, zoom, modos, eventos)
     // =================================================================
@@ -1034,9 +1037,6 @@ Fim.
     // Inicialização
     renderizarTudo();
 })();
-    console.log('PALAVRAS_POR_PAGINA vale:', PALAVRAS_POR_PAGINA);
-    console.log('Tamanho do TEXTO_ORIGINAL:', TEXTO_ORIGINAL.length);
-    console.log('Total de palavras no texto:', TEXTO_ORIGINAL.trim().split(/\s+/).filter(Boolean).length);
 </script>
 
 
