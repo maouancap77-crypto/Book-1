@@ -423,9 +423,9 @@
         }
     }
 </style>
-</head>
 <body>
 <div class="cenario">
+    <!-- Livro (área principal de leitura) -->
     <div class="livro fechado" id="livro">
         <!-- CAPA (fechada) -->
         <div class="capa">
@@ -434,50 +434,66 @@
             <p>Canto Desconhecido</p>
             <div style="margin-top: 50px; font-size: 1.5rem;">✻ toque para abrir ✻</div>
         </div>
-
+        
         <!-- INTERIOR (aberto) -->
         <div class="interior">
-            <!-- Área de visualização com dois modos -->
             <div class="visualizacao modo-livro-ativo" id="visualizacao">
-                <!-- Modo livro: duas páginas -->
                 <div class="modo-livro">
                     <div class="pagina-esquerda" id="paginaEsquerda"></div>
                     <div class="pagina-direita" id="paginaDireita"></div>
                 </div>
-                <!-- Modo zoom: página única ampliável -->
                 <div class="modo-zoom">
                     <div class="pagina-unica" id="paginaUnica"></div>
                 </div>
             </div>
-
-            <!-- Barra de ferramentas -->
-            <div class="ferramentas">
+        </div>
+    </div>
+    
+    <!-- Painel Lateral de Controles -->
+    <div class="painel-controles">
+        <!-- Navegação Principal -->
+        <div class="nav-principal">
+            <div class="titulo-secao">📖 Navegação</div>
+            <span class="indicador-pagina" id="indicador">Páginas 1 e 2</span>
+            <div class="botoes-navegacao">
                 <button class="btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Anterior</button>
-                <span class="indicador-pagina" id="indicador">Páginas 1 e 2</span>
                 <button class="btn" id="nextBtn">Próxima <i class="fas fa-chevron-right"></i></button>
-                <button class="btn" id="toggleZoomBtn"><i class="fas fa-search"></i> Aproximar</button>
+            </div>
+            <button class="btn" id="toggleZoomBtn" style="width: 100%; margin-top: 5px;">
+                <i class="fas fa-search"></i> Aproximar
+            </button>
+        </div>
+        
+        <!-- Controles de Zoom -->
+        <div class="controles-zoom">
+            <div class="titulo-secao">🔍 Zoom</div>
+            <div class="botoes-zoom">
                 <button class="btn" id="zoomInBtn"><i class="fas fa-search-plus"></i> +</button>
                 <button class="btn" id="zoomOutBtn"><i class="fas fa-search-minus"></i> -</button>
                 <button class="btn" id="zoomResetBtn"><i class="fas fa-expand"></i> 1:1</button>
             </div>
-
-            <!-- Editor de conteúdo HTML -->
-            <div class="editor-html">
-                <textarea id="htmlEditor" placeholder="Edite o HTML da página atual..."></textarea>
-                <div class="botoes-editor">
-                    <button class="btn" id="updateBtn"><i class="fas fa-pen"></i> Atualizar</button>
-                    <button class="btn" id="addBtn"><i class="fas fa-plus-circle"></i> Adicionar</button>
-                    <button class="btn" id="removeBtn"><i class="fas fa-trash-alt"></i> Remover</button>
-                </div>
+        </div>
+        
+        <!-- Editor HTML -->
+        <div class="editor-html">
+            <div class="titulo-secao">✏️ Editor</div>
+            <textarea id="htmlEditor" placeholder="Edite o HTML da página atual..."></textarea>
+            <div class="botoes-editor">
+                <button class="btn" id="updateBtn"><i class="fas fa-pen"></i> Atualizar</button>
+                <button class="btn" id="addBtn"><i class="fas fa-plus-circle"></i> Adicionar</button>
+                <button class="btn" id="removeBtn"><i class="fas fa-trash-alt"></i> Remover</button>
             </div>
         </div>
     </div>
-
+    
     <!-- Botão externo abrir/fechar -->
     <div class="controle-abertura">
-        <button class="btn btn-abrir" id="toggleLivroBtn"><i class="fas fa-book-open"></i> Abrir Livro</button>
+        <button class="btn btn-abrir" id="toggleLivroBtn">
+            <i class="fas fa-book-open"></i> Fechar Livro
+        </button>
     </div>
-    <div class="runas">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ ᛈ ᛉ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ</div>
+    
+    <div class="runas">ᚠ ᚢ ᚦ  ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ  ᛉ ᛊ ᛏ ᛒ ᛖ  ᛚ  ᛞ </div>
 </div>
 
 <script>
