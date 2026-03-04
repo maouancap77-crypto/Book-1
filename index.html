@@ -818,7 +818,7 @@ Fim.
         console.log('Tem linhas vazias?', teste.filter(l => l.trim() === '').length);
         
         // ----- Gerar páginas a partir do texto original -----
-        const paginas = dividirTextoEmPaginas(TEXTO_ORIGINAL, PALAVRAS_POR_PAGINA);
+        const paginas = dividirTextoEmPaginas(TEXTO_ORIGINAL, 400);
         console.log('Total de páginas geradas:', paginas.length);
         console.log('Palavras na página 1:', paginas[0]?.split(/\s+/).length);
     // =================================================================
@@ -1034,6 +1034,9 @@ Fim.
     // Inicialização
     renderizarTudo();
 })();
+    console.log('PALAVRAS_POR_PAGINA vale:', PALAVRAS_POR_PAGINA);
+    console.log('Tamanho do TEXTO_ORIGINAL:', TEXTO_ORIGINAL.length);
+    console.log('Total de palavras no texto:', TEXTO_ORIGINAL.trim().split(/\s+/).filter(Boolean).length);
 </script>
 
 
