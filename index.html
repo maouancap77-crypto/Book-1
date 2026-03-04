@@ -9,308 +9,420 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-        body {
-            background: #1e2b1a;
-            background-image: radial-gradient(circle at 30% 40%, #2d4a1e, #142010);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Cinzel', serif;
-            padding: 20px;
-        }
+    body {
+        background: #1e2b1a;
+        background-image: radial-gradient(circle at 30% 40%, #2d4a1e, #142010);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Cinzel', serif;
+        padding: 20px;
+    }
 
+    .cenario {
+        position: relative;
+        width: 100%;
+        max-width: 1600px;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 30px;
+    }
+
+    /* Livro maior e mais alto */
+    .livro {
+        position: relative;
+        width: 100%;
+        max-width: 1200px;
+        height: 850px;
+        background: transparent;
+        perspective: 2500px;
+        margin-bottom: 0;
+        box-shadow: 0 40px 50px rgba(0,0,0,0.8);
+        border-radius: 30px 12px 12px 30px;
+        flex: 1;
+    }
+
+    .capa, .interior {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        border-radius: 30px 12px 12px 30px;
+        transition: transform 1s ease, opacity 0.6s ease;
+        backface-visibility: hidden;
+        box-shadow: 0 20px 30px rgba(0,0,0,0.7);
+        overflow: hidden;
+    }
+
+    .capa {
+        background: #3d6b3a;
+        background: linear-gradient(145deg, #1f4a1a, #3d8b40, #1f4a1a);
+        border: 8px double #b99e6b;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #f8e4b5;
+        text-shadow: 5px 5px 0 #1a3a15;
+        font-family: 'MedievalSharp', cursive;
+        transform: rotateY(0deg);
+        z-index: 2;
+        cursor: pointer;
+    }
+
+    .livro.fechado .capa {
+        opacity: 1;
+        transform: rotateY(0deg) scale(1);
+        pointer-events: auto;
+    }
+
+    .livro.fechado .interior {
+        opacity: 0;
+        transform: rotateY(-20deg) scale(0.9);
+        pointer-events: none;
+    }
+
+    .livro.aberto .capa {
+        opacity: 0;
+        transform: rotateY(-140deg) scale(0.7);
+        pointer-events: none;
+    }
+
+    .livro.aberto .interior {
+        opacity: 1;
+        transform: rotateY(0deg) scale(1);
+        pointer-events: auto;
+    }
+
+    .capa h1 {
+        font-size: 3.5rem;
+        margin-bottom: 20px;
+        letter-spacing: 8px;
+        border-bottom: 4px solid #e3b87c;
+        padding-bottom: 15px;
+    }
+
+    .capa p {
+        font-size: 1.8rem;
+        font-style: italic;
+    }
+
+    .árvore {
+        font-size: 5rem;
+        color: #b8d9a6;
+        text-shadow: 0 0 15px #9fdf7f;
+        margin: 20px 0;
+    }
+
+    .interior {
+        background: #ecd8b0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="%23e2caa3" opacity="0.3"/><path d="M20 20 L100 20 M20 50 L100 50 M20 80 L100 80" stroke="%23ac8b5a" stroke-width="1" opacity="0.2"/></svg>');
+        box-shadow: inset 0 0 40px #9e7f56, 0 15px 30px rgba(0,0,0,0.6);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Área de visualização expandida */
+    .visualizacao {
+        flex: 1;
+        position: relative;
+        background: #f6e9d2;
+        border: 16px double #826b44;
+        border-radius: 30px 8px 30px 8px;
+        box-shadow: inset 0 0 30px #7d623c;
+        margin-bottom: 0;
+        overflow: hidden;
+        height: calc(100% - 20px);
+    }
+
+    .modo-livro {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .modo-zoom {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transition: opacity 0.3s ease;
+        overflow: auto;
+        background: #f6e9d2;
+    }
+
+    .visualizacao.modo-livro-ativo .modo-livro {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .visualizacao.modo-livro-ativo .modo-zoom {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .visualizacao.modo-zoom-ativo .modo-livro {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .visualizacao.modo-zoom-ativo .modo-zoom {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Páginas com mais espaço e texto maior */
+    .pagina-esquerda, .pagina-direita {
+        flex: 1;
+        height: 100%;
+        padding: 40px 35px;
+        overflow-y: auto;
+        background: #fcf3e0;
+        box-shadow: inset 0 0 20px #b79f76;
+        font-family: 'MedievalSharp', cursive;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: #2f210f;
+        border-right: 2px dashed #9e7d55;
+        scroll-behavior: smooth;
+    }
+
+    .pagina-direita {
+        border-right: none;
+        border-left: 2px dashed #9e7d55;
+    }
+
+    .pagina-unica {
+        width: 100%;
+        height: 100%;
+        padding: 40px 50px;
+        overflow: auto;
+        background: #fcf3e0;
+        font-family: 'MedievalSharp', cursive;
+        font-size: 1.3rem;
+        line-height: 1.9;
+        color: #2f210f;
+        transform-origin: top left;
+        transition: transform 0.2s;
+    }
+
+    /* Painel lateral de controles */
+    .painel-controles {
+        width: 320px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex-shrink: 0;
+    }
+
+    /* Navegação principal */
+    .nav-principal {
+        background: linear-gradient(145deg, #34663a, #5f9455);
+        border: 4px ridge #ebc17e;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 0 #2b4d23, 0 10px 20px black;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .titulo-secao {
+        color: #f8e4b5;
+        font-family: 'Cinzel', serif;
+        font-size: 1.1rem;
+        text-align: center;
+        border-bottom: 2px solid #b99e6b;
+        padding-bottom: 8px;
+        margin-bottom: 5px;
+    }
+
+    .botoes-navegacao {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .indicador-pagina {
+        background: #2e4d27;
+        color: #faeac6;
+        padding: 12px 20px;
+        border-radius: 40px;
+        font-size: 1.1rem;
+        border: 2px solid #cb9f5e;
+        box-shadow: inset 0 0 8px #142010;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+    }
+
+    /* Controles de zoom */
+    .controles-zoom {
+        background: linear-gradient(145deg, #34663a, #5f9455);
+        border: 4px ridge #ebc17e;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 0 #2b4d23, 0 10px 20px black;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .botoes-zoom {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Editor HTML */
+    .editor-html {
+        background: linear-gradient(145deg, #34663a, #5f9455);
+        border: 4px ridge #ebc17e;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 0 #2b4d23, 0 10px 20px black;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .editor-html textarea {
+        width: 100%;
+        min-height: 150px;
+        background: #fef3da;
+        border: 3px solid #886c3f;
+        border-radius: 15px;
+        padding: 12px 15px;
+        font-family: 'MedievalSharp', cursive;
+        font-size: 0.95rem;
+        resize: vertical;
+        color: #2b1f0c;
+    }
+
+    .botoes-editor {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Botões */
+    .btn {
+        background: #1f3b1c;
+        border: 2px solid #dbb36b;
+        color: #fcf0c7;
+        font-family: 'Cinzel', serif;
+        font-weight: bold;
+        font-size: 0.95rem;
+        padding: 10px 18px;
+        border-radius: 40px;
+        cursor: pointer;
+        box-shadow: 0 4px 0 #0f2a0c, 0 5px 10px black;
+        transition: 0.08s linear;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn:active {
+        transform: translateY(4px);
+        box-shadow: 0 1px 0 #0f2a0c, 0 5px 10px black;
+    }
+
+    .btn i {
+        color: #ffdd99;
+    }
+
+    /* Botão fechar livro - posicionado abaixo do livro */
+    .controle-abertura {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+    }
+
+    .btn-abrir {
+        background: #6f8c4a;
+        font-size: 1.5rem;
+        padding: 15px 40px;
+        border-width: 4px;
+        letter-spacing: 3px;
+    }
+
+    /* Runas - canto inferior direito */
+    .runas {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        font-size: 1.5rem;
+        color: #bda46b;
+        text-shadow: 3px 3px 0 #1d2e12;
+        letter-spacing: 10px;
+        margin-top: 0;
+    }
+
+    /* Responsivo para telas menores */
+    @media (max-width: 1200px) {
         .cenario {
-            position: relative;
-            width: 100%;
-            max-width: 1300px;
-            display: flex;
             flex-direction: column;
             align-items: center;
         }
-
+        
         .livro {
-            position: relative;
-            width: 1000px;
-            height: 680px;
-            background: transparent;
-            perspective: 2500px;
-            margin-bottom: 25px;
-            box-shadow: 0 40px 50px rgba(0,0,0,0.8);
-            border-radius: 30px 12px 12px 30px;
+            max-width: 100%;
+            height: 600px;
         }
-
-        .capa, .interior {
-            position: absolute;
+        
+        .painel-controles {
             width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            border-radius: 30px 12px 12px 30px;
-            transition: transform 1s ease, opacity 0.6s ease;
-            backface-visibility: hidden;
-            box-shadow: 0 20px 30px rgba(0,0,0,0.7);
-            overflow: hidden;
+            max-width: 600px;
         }
-
-        .capa {
-            background: #3d6b3a;
-            background: linear-gradient(145deg, #1f4a1a, #3d8b40, #1f4a1a);
-            border: 8px double #b99e6b;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #f8e4b5;
-            text-shadow: 5px 5px 0 #1a3a15;
-            font-family: 'MedievalSharp', cursive;
-            transform: rotateY(0deg);
-            z-index: 2;
-            cursor: pointer;
-        }
-
-        .livro.fechado .capa {
-            opacity: 1;
-            transform: rotateY(0deg) scale(1);
-            pointer-events: auto;
-        }
-
-        .livro.fechado .interior {
-            opacity: 0;
-            transform: rotateY(-20deg) scale(0.9);
-            pointer-events: none;
-        }
-
-        .livro.aberto .capa {
-            opacity: 0;
-            transform: rotateY(-140deg) scale(0.7);
-            pointer-events: none;
-        }
-
-        .livro.aberto .interior {
-            opacity: 1;
-            transform: rotateY(0deg) scale(1);
-            pointer-events: auto;
-        }
-
-        .capa h1 {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            letter-spacing: 8px;
-            border-bottom: 4px solid #e3b87c;
-            padding-bottom: 15px;
-        }
-
-        .capa p {
-            font-size: 1.8rem;
-            font-style: italic;
-        }
-
-        .árvore {
-            font-size: 5rem;
-            color: #b8d9a6;
-            text-shadow: 0 0 15px #9fdf7f;
-            margin: 20px 0;
-        }
-
-        .interior {
-            background: #ecd8b0;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="%23e2caa3" opacity="0.3"/><path d="M20 20 L100 20 M20 50 L100 50 M20 80 L100 80" stroke="%23ac8b5a" stroke-width="1" opacity="0.2"/></svg>');
-            box-shadow: inset 0 0 40px #9e7f56, 0 15px 30px rgba(0,0,0,0.6);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .visualizacao {
-            flex: 1;
-            position: relative;
-            background: #f6e9d2;
-            border: 16px double #826b44;
-            border-radius: 30px 8px 30px 8px;
-            box-shadow: inset 0 0 30px #7d623c;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .modo-livro {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modo-zoom {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            transition: opacity 0.3s ease;
-            overflow: auto;
-            background: #f6e9d2;
-        }
-
-        .visualizacao.modo-livro-ativo .modo-livro {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .visualizacao.modo-livro-ativo .modo-zoom {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .visualizacao.modo-zoom-ativo .modo-livro {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .visualizacao.modo-zoom-ativo .modo-zoom {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
+        
         .pagina-esquerda, .pagina-direita {
-            flex: 1;
-            height: 100%;
             padding: 25px 20px;
-            overflow-y: auto;
-            background: #fcf3e0;
-            box-shadow: inset 0 0 20px #b79f76;
-            font-family: 'MedievalSharp', cursive;
             font-size: 1.1rem;
-            line-height: 1.6;
-            color: #2f210f;
-            border-right: 2px dashed #9e7d55;
-            scroll-behavior: smooth;
         }
-
-        .pagina-direita {
-            border-right: none;
-            border-left: 2px dashed #9e7d55;
-        }
-
+        
         .pagina-unica {
-            width: 100%;
-            height: 100%;
             padding: 30px 40px;
-            overflow: auto;
-            background: #fcf3e0;
-            font-family: 'MedievalSharp', cursive;
             font-size: 1.2rem;
-            line-height: 1.7;
-            color: #2f210f;
-            transform-origin: top left;
-            transition: transform 0.2s;
         }
+    }
 
-        .ferramentas {
-            background: #58854b;
-            background: linear-gradient(145deg, #34663a, #5f9455);
-            border: 4px ridge #ebc17e;
-            border-radius: 60px 60px 20px 20px;
-            padding: 12px 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: 0 8px 0 #2b4d23, 0 10px 20px black;
+    @media (max-width: 768px) {
+        body {
+            padding: 10px;
         }
-
-        .btn {
-            background: #1f3b1c;
-            border: 2px solid #dbb36b;
-            color: #fcf0c7;
-            font-family: 'Cinzel', serif;
-            font-weight: bold;
-            font-size: 1rem;
-            padding: 8px 16px;
-            border-radius: 40px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 #0f2a0c, 0 5px 10px black;
-            transition: 0.08s linear;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        
+        .livro {
+            height: 500px;
         }
-
-        .btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #0f2a0c, 0 5px 10px black;
+        
+        .capa h1 {
+            font-size: 2.5rem;
         }
-
-        .btn i {
-            color: #ffdd99;
-        }
-
-        .indicador-pagina {
-            background: #2e4d27;
-            color: #faeac6;
-            padding: 8px 30px;
-            border-radius: 40px;
+        
+        .runas {
             font-size: 1.2rem;
-            border: 2px solid #cb9f5e;
-            box-shadow: inset 0 0 8px #142010;
-            font-weight: bold;
-            min-width: 220px;
-            text-align: center;
-        }
-
-        .editor-html {
-            background: #284a28;
-            border: 3px inset #b8914b;
-            border-radius: 40px;
-            padding: 15px 20px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .editor-html textarea {
-            flex: 2 1 350px;
-            background: #fef3da;
-            border: 4px solid #886c3f;
-            border-radius: 40px;
-            padding: 15px 20px;
-            font-family: 'MedievalSharp', cursive;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 100px;
-            color: #2b1f0c;
-        }
-
-        .botoes-editor {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .btn-abrir {
-            background: #6f8c4a;
-            font-size: 1.8rem;
-            padding: 18px 50px;
-            border-width: 5px;
             letter-spacing: 5px;
         }
-
-        .runas {
-            font-size: 2rem;
-            color: #bda46b;
-            text-shadow: 3px 3px 0 #1d2e12;
-            letter-spacing: 15px;
-            margin-top: 10px;
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 <div class="cenario">
