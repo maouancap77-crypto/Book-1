@@ -760,76 +760,61 @@ Fim.
 
 `;
 
-    // =================================================================
-    // FUNÇÃO: divide o texto em páginas com base no número de palavras
-    // =================================================================
-    function dividirTextoEmPaginas(texto, palavrasPorPagina) {
-        // Remove espaços extras e divide em parágrafos (preservando a estrutura)
-        const paragrafos = texto.split(/\n\s*\n/); // divide por linhas em branco
-        const paginas = [];
-        let paginaAtual = [];
-        let contadorPalavras = 0;
-
-        function contarPalavras(str) {
-            return str.split(/\s+/).filter(Boolean).length;
-        }
-
-        for (let para of paragrafos) {
-            para = para.trim();
-            if (!para) continue;
-
-            const palavrasPara = contarPalavras(para);
-
-            // Se o parágrafo sozinho já ultrapassa o limite, ele vai para uma página própria
-            if (palavrasPara > palavrasPorPagina) {
-                // Se a página atual não estiver vazia, finaliza ela primeiro
-                if (paginaAtual.length > 0) {
-                    paginas.push(paginaAtual.join('\n\n'));
-                    paginaAtual = [];
-                    contadorPalavras = 0;
-                }
-                // Adiciona o parágrafo grande como uma página única
-                paginas.push(para);
-                continue;
+           // =================================================================
+        // FUNÇÃO: divide o texto em páginas com base no número de palavras
+        // =================================================================
+        function dividirTextoEmPaginas(texto, palavrasPorPagina) {
+            function contarPalavras(str) {
+                return str.split(/\s+/).filter(Boolean).length;
             }
-
-            // Se o parágrafo cabe na página atual
-            if (contadorPalavras + palavrasPara <= palavrasPorPagina) {
-                paginaAtual.push(para);
-                contadorPalavras += palavrasPara;
-            } else {
-                // Não cabe: finaliza a página atual e começa nova com este parágrafo
-                if (paginaAtual.length > 0) {
-                    paginas.push(paginaAtual.join('\n\n'));
+        
+            // Divide por linhas simples e agrupa linhas consecutivas em blocos (parágrafos)
+            const linhas = texto.split(/\n/);
+            const blocos = [];
+            let blocoAtual = [];
+        
+            for (let linha of linhas) {
+                linha = linha.trim();
+                if (linha === '') {
+                    if (blocoAtual.length > 0) {
+                        blocos.push(blocoAtual.join(' '));
+                        blocoAtual = [];
+                    }
+                } else {
+                    blocoAtual.push(linha);
                 }
-                paginaAtual = [para];
-                contadorPalavras = palavrasPara;
             }
+            if (blocoAtual.length > 0) blocos.push(blocoAtual.join(' '));
+        
+            // Agrupa blocos em páginas respeitando o limite de palavras
+            const paginas = [];
+            let paginaAtual = [];
+            let contadorPalavras = 0;
+        
+            for (let bloco of blocos) {
+                if (!bloco.trim()) continue;
+                const palavrasBloco = contarPalavras(bloco);
+        
+                if (contadorPalavras + palavrasBloco > palavrasPorPagina && paginaAtual.length > 0) {
+                    paginas.push(paginaAtual.map(b => `<p>${b}</p>`).join(''));
+                    paginaAtual = [bloco];
+                    contadorPalavras = palavrasBloco;
+                } else {
+                    paginaAtual.push(bloco);
+                    contadorPalavras += palavrasBloco;
+                }
+            }
+        
+            if (paginaAtual.length > 0) {
+                paginas.push(paginaAtual.map(b => `<p>${b}</p>`).join(''));
+            }
+        
+            if (paginas.length === 0) paginas.push('<p>Página vazia</p>');
+            return paginas;
         }
-
-        // Última página
-        if (paginaAtual.length > 0) {
-            paginas.push(paginaAtual.join('\n\n'));
-        }
-
-        // Garante pelo menos uma página
-        if (paginas.length === 0) paginas.push('<p>Página vazia</p>');
-
-        return paginas;
-    }
-
-    // ----- Gerar páginas a partir do texto original -----
-    const paginas = dividirTextoEmPaginas(TEXTO_ORIGINAL, PALAVRAS_POR_PAGINA).map(conteudo => {
-        // Converte quebras de linha simples em <br> ou <p>, mas preserva marcadores como "---"
-        // Aqui optamos por manter os parágrafos como foram divididos, apenas embrulhando em <p>
-        return conteudo.split('\n\n').map(bloco => {
-            bloco = bloco.trim();
-            if (!bloco) return '';
-            // Se o bloco contém linhas com travessão (diálogo), mantém a formatação simples
-            return `<p>${bloco.replace(/\n/g, '<br>')}</p>`;
-        }).join('');
-    });
-    
+        
+        // ----- Gerar páginas a partir do texto original -----
+        const paginas = dividirTextoEmPaginas(TEXTO_ORIGINAL, PALAVRAS_POR_PAGINA);
     // =================================================================
     // Lógica completa do livro (navegação, zoom, modos, eventos)
     // =================================================================
