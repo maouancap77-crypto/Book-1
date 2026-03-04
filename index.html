@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Livro das Duas Torres · Modo Folhas Gêmeas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=MedievalSharp&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #1e2b1a;
+            background-image: radial-gradient(circle at 30% 40%, #2d4a1e, #142010);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Cinzel', serif;
+            padding: 20px;
+        }
+
+        /* cenário com textura de floresta antiga */
+        .cenario {
+            position: relative;
+            width: 100%;
+            max-width: 1300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Livro principal com efeito 3D */
+        .livro {
+            position: relative;
+            width: 1000px;
+            height: 680px;
+            background: transparent;
+            perspective: 2500px;
+            margin-bottom: 25px;
+            box-shadow: 0 40px 50px rgba(0,0,0,0.8);
+            border-radius: 30px 12px 12px 30px;
+        }
+
+        .capa, .interior {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 30px 12px 12px 30px;
+            transition: transform 1s ease, opacity 0.6s ease;
+            backface-visibility: hidden;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.7);
+            overflow: hidden;
+        }
+
+        /* Capa fechada - estilo couro élfico */
+        .capa {
+            background: #3d6b3a;
+            background: linear-gradient(145deg, #1f4a1a, #3d8b40, #1f4a1a);
+            border: 8px double #b99e6b;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #f8e4b5;
+            text-shadow: 5px 5px 0 #1a3a15;
+            font-family: 'MedievalSharp', cursive;
+            transform: rotateY(0deg);
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        .livro.fechado .capa {
+            opacity: 1;
+            transform: rotateY(0deg) scale(1);
+            pointer-events: auto;
+        }
+
+        .livro.fechado .interior {
+            opacity: 0;
+            transform: rotateY(-20deg) scale(0.9);
+            pointer-events: none;
+        }
+
+        .livro.aberto .capa {
+            opacity: 0;
+            transform: rotateY(-140deg) scale(0.7);
+            pointer-events: none;
+        }
+
+        .livro.aberto .interior {
+            opacity: 1;
+            transform: rotateY(0deg) scale(1);
+            pointer-events: auto;
+        }
+
+        .capa h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 8px;
+            border-bottom: 4px solid #e3b87c;
+            padding-bottom: 15px;
+        }
+
+        .capa p {
+            font-size: 1.8rem;
+            font-style: italic;
+        }
+
+        .árvore {
+            font-size: 5rem;
+            color: #b8d9a6;
+            text-shadow: 0 0 15px #9fdf7f;
+            margin: 20px 0;
+        }
+
+        /* Interior do livro */
+        .interior {
+            background: #ecd8b0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="%23e2caa3" opacity="0.3"/><path d="M20 20 L100 20 M20 50 L100 50 M20 80 L100 80" stroke="%23ac8b5a" stroke-width="1" opacity="0.2"/></svg>');
+            box-shadow: inset 0 0 40px #9e7f56, 0 15px 30px rgba(0,0,0,0.6);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Container para os dois modos de visualização */
+        .visualizacao {
+            flex: 1;
+            position: relative;
+            background: #f6e9d2;
+            border: 16px double #826b44;
+            border-radius: 30px 8px 30px 8px;
+            box-shadow: inset 0 0 30px #7d623c;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        /* Modo livro: duas páginas lado a lado */
+        .modo-livro {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modo-zoom {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.3s ease;
+            overflow: auto;
+            background: #f6e9d2;
+        }
+
+        /* alternância entre modos */
+        .visualizacao.modo-livro-ativo .modo-livro {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .visualizacao.modo-livro-ativo .modo-zoom {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .visualizacao.modo-zoom-ativo .modo-livro {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .visualizacao.modo-zoom-ativo .modo-zoom {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* páginas gêmeas */
+        .pagina-esquerda, .pagina-direita {
+            flex: 1;
+            height: 100%;
+            padding: 25px 20px;
+            overflow-y: auto;
+            background: #fcf3e0;
+            box-shadow: inset 0 0 20px #b79f76;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #2f210f;
+            border-right: 2px dashed #9e7d55; /* vinco central */
+            scroll-behavior: smooth;
+        }
+
+        .pagina-direita {
+            border-right: none;
+            border-left: 2px dashed #9e7d55;
+        }
+
+        /* página única com zoom */
+        .pagina-unica {
+            width: 100%;
+            height: 100%;
+            padding: 30px 40px;
+            overflow: auto;
+            background: #fcf3e0;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.2rem;
+            line-height: 1.7;
+            color: #2f210f;
+            transform-origin: top left;
+            transition: transform 0.2s;
+        }
+
+        /* Barra de ferramentas com tema rúnico */
+        .ferramentas {
+            background: #58854b;
+            background: linear-gradient(145deg, #34663a, #5f9455);
+            border: 4px ridge #ebc17e;
+            border-radius: 60px 60px 20px 20px;
+            padding: 12px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 0 #2b4d23, 0 10px 20px black;
+        }
+
+        .btn {
+            background: #1f3b1c;
+            border: 2px solid #dbb36b;
+            color: #fcf0c7;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0f2a0c, 0 5px 10px black;
+            transition: 0.08s linear;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #0f2a0c, 0 5px 10px black;
+        }
+
+        .btn i {
+            color: #ffdd99;
+        }
+
+        .indicador-pagina {
+            background: #2e4d27;
+            color: #faeac6;
+            padding: 8px 30px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            border: 2px solid #cb9f5e;
+            box-shadow: inset 0 0 8px #142010;
+            font-weight: bold;
+            min-width: 220px;
+            text-align: center;
+        }
+
+        .editor-html {
+            background: #284a28;
+            border: 3px inset #b8914b;
+            border-radius: 40px;
+            padding: 15px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .editor-html textarea {
+            flex: 2 1 350px;
+            background: #fef3da;
+            border: 4px solid #886c3f;
+            border-radius: 40px;
+            padding: 15px 20px;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            color: #2b1f0c;
+        }
+
+        .botoes-editor {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-abrir {
+            background: #6f8c4a;
+            font-size: 1.8rem;
+            padding: 18px 50px;
+            border-width: 5px;
+            letter-spacing: 5px;
+        }
+
+        .runas {
+            font-size: 2rem;
+            color: #bda46b;
+            text-shadow: 3px 3px 0 #1d2e12;
+            letter-spacing: 15px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="cenario">
+    <div class="livro fechado" id="livro">
+        <!-- CAPA (fechada) -->
+        <div class="capa">
+            <h1>O Livro das Folhas</h1>
+            <div class="árvore"><i class="fas fa-tree"></i></div>
+            <p>Contos da Terra‑média</p>
+            <div style="margin-top: 50px; font-size: 1.5rem;">✻ toque para abrir ✻</div>
+        </div>
+
+        <!-- INTERIOR (aberto) -->
+        <div class="interior">
+            <!-- Área de visualização com dois modos -->
+            <div class="visualizacao modo-livro-ativo" id="visualizacao">
+                <!-- Modo livro: duas páginas -->
+                <div class="modo-livro">
+                    <div class="pagina-esquerda" id="paginaEsquerda"></div>
+                    <div class="pagina-direita" id="paginaDireita"></div>
+                </div>
+                <!-- Modo zoom: página única ampliável -->
+                <div class="modo-zoom">
+                    <div class="pagina-unica" id="paginaUnica"></div>
+                </div>
+            </div>
+
+            <!-- Barra de ferramentas -->
+            <div class="ferramentas">
+                <button class="btn" id="prevBtn"><i class="fas fa-chevron-left"></i> Anterior</button>
+                <span class="indicador-pagina" id="indicador">Páginas 1 e 2</span>
+                <button class="btn" id="nextBtn">Próxima <i class="fas fa-chevron-right"></i></button>
+                <button class="btn" id="toggleZoomBtn"><i class="fas fa-search"></i> Aproximar</button>
+                <button class="btn" id="zoomInBtn"><i class="fas fa-search-plus"></i> +</button>
+                <button class="btn" id="zoomOutBtn"><i class="fas fa-search-minus"></i> -</button>
+                <button class="btn" id="zoomResetBtn"><i class="fas fa-expand"></i> 1:1</button>
+            </div>
+
+            <!-- Editor de conteúdo HTML -->
+            <div class="editor-html">
+                <textarea id="htmlEditor" placeholder="Edite o HTML da página atual...">&lt;h2&gt;O Hobbit&lt;/h2&gt;&lt;p&gt;Numa toca no chão vivia um hobbit...&lt;/p&gt;</textarea>
+                <div class="botoes-editor">
+                    <button class="btn" id="updateBtn"><i class="fas fa-pen"></i> Atualizar</button>
+                    <button class="btn" id="addBtn"><i class="fas fa-plus-circle"></i> Adicionar</button>
+                    <button class="btn" id="removeBtn"><i class="fas fa-trash-alt"></i> Remover</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão externo abrir/fechar -->
+    <div class="controle-abertura">
+        <button class="btn btn-abrir" id="toggleLivroBtn"><i class="fas fa-book-open"></i> Abrir Livro</button>
+    </div>
+    <div class="runas">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ ᚺ ᚾ ᛁ ᛃ ᛇ ᛈ ᛉ ᛊ ᛏ ᛒ ᛖ ᛗ ᛚ ᛜ ᛞ ᛟ</div>
+</div>
+
+<script>
+    (function() {
+        // ------ BASE DE PÁGINAS (conteúdos temáticos) ------
+        let paginas = [
+            `<h2 style="color:#3f6b2f;">🌿 O Hobbit</h2>
+             <p>Numa toca no chão vivia um hobbit. Não uma toca úmida, suja, mas uma toca de hobbit, e isso significa conforto.</p>
+             <p>Bilbo Bolseiro era respeitável e nunca tinha aventuras, até que Gandalf apareceu.</p>`,
+            `<h2 style="color:#3f6b2f;">🧝 O Senhor dos Anéis</h2>
+             <p>Três Anéis para os Reis-Elfos sob este céu,<br>
+             Sete para os Senhores-Anões em seus rochosos corredores,<br>
+             Nove para os Homens Mortais...<br>
+             Um para o Senhor do Escuro.</p>`,
+            `<h2 style="color:#3f6b2f;">🗡️ As Duas Torres</h2>
+             <p>A perseguição pelos Uruk-hai leva Aragorn, Legolas e Gimli às fronteiras de Fangorn. Lá encontram um mago redivivo.</p>`,
+            `<h2 style="color:#3f6b2f;">🏔️ O Retorno do Rei</h2>
+             <p>A batalha dos Campos do Pelennor, a marcha dos Mortos e a última esperança na Montanha da Perdição.</p>`,
+            `<h2 style="color:#3f6b2f;">📜 O Silmarillion</h2>
+             <p>Da música dos Ainur, da criação de Arda, e das joias que incendiaram a guerra dos elfos.</p>`
+        ];
+
+        // Estado dos índices
+        let indiceEsquerda = 0;       // índice da página à esquerda no modo livro
+        let indiceUnico = 0;           // índice da página única no modo zoom
+        let zoomNivel = 1.0;
+        const ZOOM_MIN = 0.5;
+        const ZOOM_MAX = 3.0;
+        const PASSO_ZOOM = 0.2;
+
+        // Modo atual: 'livro' ou 'zoom'
+        let modoAtual = 'livro';       // começa em livro
+
+        // Elementos DOM
+        const livroEl = document.getElementById('livro');
+        const toggleBtn = document.getElementById('toggleLivroBtn');
+        const visualizacao = document.getElementById('visualizacao');
+        const paginaEsq = document.getElementById('paginaEsquerda');
+        const paginaDir = document.getElementById('paginaDireita');
+        const paginaUnica = document.getElementById('paginaUnica');
+        const indicador = document.getElementById('indicador');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const toggleZoomBtn = document.getElementById('toggleZoomBtn');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const zoomResetBtn = document.getElementById('zoomResetBtn');
+        const htmlEditor = document.getElementById('htmlEditor');
+        const updateBtn = document.getElementById('updateBtn');
+        const addBtn = document.getElementById('addBtn');
+        const removeBtn = document.getElementById('removeBtn');
+
+        // ----- FUNÇÕES DE RENDERIZAÇÃO -----
+        function renderizarModoLivro() {
+            // Mostra páginas esquerda e direita
+            paginaEsq.innerHTML = paginas[indiceEsquerda] || '<p style="color:#775533;">Página vazia</p>';
+            if (indiceEsquerda + 1 < paginas.length) {
+                paginaDir.innerHTML = paginas[indiceEsquerda + 1];
+            } else {
+                paginaDir.innerHTML = '<p style="color:#775533;">✧ Fim das histórias ✧</p><p>Adicione mais páginas com o editor.</p>';
+            }
+            // Atualiza indicador
+            indicador.textContent = `Páginas ${indiceEsquerda+1} e ${Math.min(indiceEsquerda+2, paginas.length)}`;
+        }
+
+        function renderizarModoZoom() {
+            paginaUnica.innerHTML = paginas[indiceUnico] || '<p>Página vazia</p>';
+            aplicarZoom(zoomNivel); // ajusta a escala
+            indicador.textContent = `Página ${indiceUnico+1} (zoom)`;
+        }
+
+        function aplicarZoom(novoZoom) {
+            zoomNivel = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, novoZoom));
+            paginaUnica.style.transform = `scale(${zoomNivel})`;
+        }
+
+        function renderizarTudo() {
+            if (modoAtual === 'livro') {
+                renderizarModoLivro();
+                // atualiza editor com a página esquerda
+                htmlEditor.value = paginas[indiceEsquerda] || '';
+            } else {
+                renderizarModoZoom();
+                htmlEditor.value = paginas[indiceUnico] || '';
+            }
+        }
+
+        // Alternância de modo
+        function ativarModo(modo) {
+            modoAtual = modo;
+            if (modo === 'livro') {
+                visualizacao.classList.remove('modo-zoom-ativo');
+                visualizacao.classList.add('modo-livro-ativo');
+                toggleZoomBtn.innerHTML = '<i class="fas fa-search"></i> Aproximar';
+                // sincroniza índice único com a esquerda (para que ao voltar, mantenha a página)
+                indiceUnico = indiceEsquerda;
+                renderizarModoLivro();
+                htmlEditor.value = paginas[indiceEsquerda] || '';
+            } else {
+                visualizacao.classList.remove('modo-livro-ativo');
+                visualizacao.classList.add('modo-zoom-ativo');
+                toggleZoomBtn.innerHTML = '<i class="fas fa-book-open"></i> Visão dupla';
+                // índice único já deve estar sincronizado
+                renderizarModoZoom();
+                htmlEditor.value = paginas[indiceUnico] || '';
+            }
+        }
+
+        // Navegação
+        function anterior() {
+            if (modoAtual === 'livro') {
+                if (indiceEsquerda >= 2) {
+                    indiceEsquerda -= 2;
+                } else {
+                    alert('Já estás no início do livro.');
+                    return;
+                }
+                renderizarModoLivro();
+                htmlEditor.value = paginas[indiceEsquerda] || '';
+            } else {
+                if (indiceUnico > 0) {
+                    indiceUnico--;
+                } else {
+                    alert('Primeira página.');
+                    return;
+                }
+                renderizarModoZoom();
+                htmlEditor.value = paginas[indiceUnico] || '';
+            }
+        }
+
+        function proximo() {
+            if (modoAtual === 'livro') {
+                if (indiceEsquerda + 2 < paginas.length) {
+                    indiceEsquerda += 2;
+                } else {
+                    alert('Estás nas últimas folhas.');
+                    return;
+                }
+                renderizarModoLivro();
+                htmlEditor.value = paginas[indiceEsquerda] || '';
+            } else {
+                if (indiceUnico + 1 < paginas.length) {
+                    indiceUnico++;
+                } else {
+                    alert('Última página.');
+                    return;
+                }
+                renderizarModoZoom();
+                htmlEditor.value = paginas[indiceUnico] || '';
+            }
+        }
+
+        // Eventos de navegação
+        prevBtn.addEventListener('click', anterior);
+        nextBtn.addEventListener('click', proximo);
+
+        // Alternar zoom/visão dupla
+        toggleZoomBtn.addEventListener('click', () => {
+            if (modoAtual === 'livro') {
+                ativarModo('zoom');
+            } else {
+                ativarModo('livro');
+            }
+        });
+
+        // Zoom in/out/reset (só atuam no modo zoom)
+        zoomInBtn.addEventListener('click', () => {
+            if (modoAtual === 'zoom') {
+                aplicarZoom(zoomNivel + PASSO_ZOOM);
+            } else {
+                alert('Entre no modo aproximado primeiro.');
+            }
+        });
+
+        zoomOutBtn.addEventListener('click', () => {
+            if (modoAtual === 'zoom') {
+                aplicarZoom(zoomNivel - PASSO_ZOOM);
+            } else {
+                alert('Entre no modo aproximado primeiro.');
+            }
+        });
+
+        zoomResetBtn.addEventListener('click', () => {
+            if (modoAtual === 'zoom') {
+                aplicarZoom(1.0);
+            } else {
+                alert('Entre no modo aproximado primeiro.');
+            }
+        });
+
+        // Editor: atualizar página atual
+        updateBtn.addEventListener('click', () => {
+            const novoHTML = htmlEditor.value.trim() || '<p>Página em branco</p>';
+            if (modoAtual === 'livro') {
+                paginas[indiceEsquerda] = novoHTML;
+                renderizarModoLivro();
+            } else {
+                paginas[indiceUnico] = novoHTML;
+                renderizarModoZoom();
+            }
+        });
+
+        // Adicionar nova página (insere depois da atual)
+        addBtn.addEventListener('click', () => {
+            const novoConteudo = htmlEditor.value.trim() || '<h2>Nova história</h2><p>Escreva aqui...</p>';
+            if (modoAtual === 'livro') {
+                // insere após a página esquerda (para manter ordem)
+                paginas.splice(indiceEsquerda + 1, 0, novoConteudo);
+                // se havia ímpar, agora a direita será a nova página, mas vamos manter índice esquerda
+                // e re-renderizar
+                renderizarModoLivro();
+            } else {
+                paginas.splice(indiceUnico + 1, 0, novoConteudo);
+                // vai para a nova página?
+                indiceUnico++; // opcional: ir para a nova página
+                renderizarModoZoom();
+                htmlEditor.value = paginas[indiceUnico] || '';
+            }
+        });
+
+        // Remover página atual
+        removeBtn.addEventListener('click', () => {
+            if (paginas.length <= 1) {
+                alert('O livro precisa de pelo menos uma história.');
+                return;
+            }
+            if (confirm('Remover esta página para sempre?')) {
+                if (modoAtual === 'livro') {
+                    paginas.splice(indiceEsquerda, 1);
+                    if (indiceEsquerda >= paginas.length) indiceEsquerda = paginas.length - 1;
+                    if (indiceEsquerda % 2 !== 0) indiceEsquerda--; // garantir índice par para esquerda
+                    if (indiceEsquerda < 0) indiceEsquerda = 0;
+                    renderizarModoLivro();
+                    htmlEditor.value = paginas[indiceEsquerda] || '';
+                } else {
+                    paginas.splice(indiceUnico, 1);
+                    if (indiceUnico >= paginas.length) indiceUnico = paginas.length - 1;
+                    renderizarModoZoom();
+                    htmlEditor.value = paginas[indiceUnico] || '';
+                }
+            }
+        });
+
+        // Abrir/fechar livro com efeito
+        function toggleLivro() {
+            if (livroEl.classList.contains('fechado')) {
+                livroEl.classList.remove('fechado');
+                livroEl.classList.add('aberto');
+                toggleBtn.innerHTML = '<i class="fas fa-book-close"></i> Fechar Livro';
+            } else {
+                livroEl.classList.remove('aberto');
+                livroEl.classList.add('fechado');
+                toggleBtn.innerHTML = '<i class="fas fa-book-open"></i> Abrir Livro';
+            }
+        }
+
+        toggleBtn.addEventListener('click', toggleLivro);
+        document.querySelector('.capa').addEventListener('click', (e) => {
+            if (livroEl.classList.contains('fechado')) toggleLivro();
+        });
+
+        // Inicialização
+        renderizarTudo();
+    })();
+</script>
+</body>
+</html>
